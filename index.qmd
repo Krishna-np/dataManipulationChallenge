@@ -519,12 +519,18 @@ print(shipments_with_category['prodCategory'].value_counts())
 
 ::: {.callout-tip}
 ## Your Answer: Join Types and Data Loss
-*Replace this with your answer to Question 1.*
+`how='left'` keeps all rows from the left dataframe regardless of whether a match exists in the right one — which is what you want here, since every shipment should be preserved even if its `partID` isn't found in `product_line_df`. To check if any shipments were lost, compare row counts before and after the merge, or check for nulls in the `prodCategory` column:
+```python
+shipments_with_category['prodCategory'].isna().sum()
+```
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Key Column Matching
-*Replace this with your answer to Question 2.*
+If `product_line_df` has duplicate `partID` values, the merge will create multiple rows for each matching shipment — one for every duplicate. This inflates the dataset and can skew any aggregations done afterwards. It's worth checking for duplicates before merging:
+```python
+product_line_df['partID'].duplicated().sum()
+```
 :::
 
 ### 7. Split-Apply-Combine: Group Analysis

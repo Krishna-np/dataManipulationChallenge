@@ -818,7 +818,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 1.</em></p>
+<p><code>how='left'</code> keeps all rows from the left dataframe regardless of whether a match exists in the right one — which is what you want here, since every shipment should be preserved even if its <code>partID</code> isn’t found in <code>product_line_df</code>. To check if any shipments were lost, compare row counts before and after the merge, or check for nulls in the <code>prodCategory</code> column:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>shipments_with_category[<span class="st">'prodCategory'</span>].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -831,7 +832,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 2.</em></p>
+<p>If <code>product_line_df</code> has duplicate <code>partID</code> values, the merge will create multiple rows for each matching shipment — one for every duplicate. This inflates the dataset and can skew any aggregations done afterwards. It’s worth checking for duplicates before merging:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>product_line_df[<span class="st">'partID'</span>].duplicated().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </section>
@@ -840,19 +842,19 @@ Name: count, dtype: int64</code></pre>
 <p><strong>Mental Model:</strong> Group data and apply functions within each group.</p>
 <p>Now let’s analyze service levels by category:</p>
 <div id="mental-model-7-groupby" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze service levels by product category</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>service_by_category <span class="op">=</span> (</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    shipments_with_category</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'prodCategory'</span>)  <span class="co"># Split by product category</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    .agg({</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'is_late'</span>: [<span class="st">'any'</span>, <span class="st">'count'</span>, <span class="st">'sum'</span>, <span class="st">'mean'</span>],  <span class="co"># Count, late count, percentage late</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'days_late'</span>: [<span class="st">'mean'</span>, <span class="st">'max'</span>]  <span class="co"># Average and max days late</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Service Level by Product Category:"</span>)</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(service_by_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze service levels by product category</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>service_by_category <span class="op">=</span> (</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    shipments_with_category</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'prodCategory'</span>)  <span class="co"># Split by product category</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    .agg({</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'is_late'</span>: [<span class="st">'any'</span>, <span class="st">'count'</span>, <span class="st">'sum'</span>, <span class="st">'mean'</span>],  <span class="co"># Count, late count, percentage late</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'days_late'</span>: [<span class="st">'mean'</span>, <span class="st">'max'</span>]  <span class="co"># Average and max days late</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Service Level by Product Category:"</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(service_by_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Service Level by Product Category:
              is_late                   days_late    
@@ -911,25 +913,25 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
 <p><strong>Putting It All Together:</strong> Combine multiple data manipulation techniques to answer complex business questions.</p>
 <p>Let’s create a comprehensive analysis by combining shipment-level data with category information:</p>
 <div id="mental-model-7-comprehensive" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a comprehensive analysis dataset</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>comprehensive_analysis <span class="op">=</span> (</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    shipments_with_category</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">'shipID'</span>, <span class="st">'prodCategory'</span>])  <span class="co"># Group by shipment and category</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    .agg({</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'is_late'</span>: <span class="st">'any'</span>,  <span class="co"># True if any item in this shipment/category is late</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'days_late'</span>: <span class="st">'max'</span>  <span class="co"># Maximum days late for this shipment/category</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        has_multiple_categories<span class="op">=</span><span class="kw">lambda</span> df: df.groupby(<span class="st">'shipID'</span>)[<span class="st">'prodCategory'</span>].transform(<span class="st">'nunique'</span>) <span class="op">&gt;</span> <span class="dv">1</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Comprehensive analysis - shipments with multiple categories:"</span>)</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>multi_category_shipments <span class="op">=</span> comprehensive_analysis[comprehensive_analysis[<span class="st">'has_multiple_categories'</span>]]</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shipments with multiple categories: </span><span class="sc">{</span>multi_category_shipments[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total unique shipments: </span><span class="sc">{</span>comprehensive_analysis[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Percentage with multiple categories: </span><span class="sc">{</span>multi_category_shipments[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique() <span class="op">/</span> comprehensive_analysis[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique() <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a comprehensive analysis dataset</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>comprehensive_analysis <span class="op">=</span> (</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    shipments_with_category</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">'shipID'</span>, <span class="st">'prodCategory'</span>])  <span class="co"># Group by shipment and category</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    .agg({</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'is_late'</span>: <span class="st">'any'</span>,  <span class="co"># True if any item in this shipment/category is late</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'days_late'</span>: <span class="st">'max'</span>  <span class="co"># Maximum days late for this shipment/category</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        has_multiple_categories<span class="op">=</span><span class="kw">lambda</span> df: df.groupby(<span class="st">'shipID'</span>)[<span class="st">'prodCategory'</span>].transform(<span class="st">'nunique'</span>) <span class="op">&gt;</span> <span class="dv">1</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Comprehensive analysis - shipments with multiple categories:"</span>)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>multi_category_shipments <span class="op">=</span> comprehensive_analysis[comprehensive_analysis[<span class="st">'has_multiple_categories'</span>]]</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shipments with multiple categories: </span><span class="sc">{</span>multi_category_shipments[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total unique shipments: </span><span class="sc">{</span>comprehensive_analysis[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Percentage with multiple categories: </span><span class="sc">{</span>multi_category_shipments[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique() <span class="op">/</span> comprehensive_analysis[<span class="st">'shipID'</span>]<span class="sc">.</span>nunique() <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Comprehensive analysis - shipments with multiple categories:
 Shipments with multiple categories: 232
