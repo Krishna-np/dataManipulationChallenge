@@ -273,7 +273,7 @@ What's wrong with the `lateStatement` assignment and how would you fix it?
 
 ::: {.callout-tip}
 ## Your Answer: Data Types and Date Handling
-shipments_df.dtypes shows actualShipDate is datetime64[ns]. Both date columns must share the same dtype — subtracting a string from a datetime throws a TypeError, making days_late impossible to calculate.
+`shipments_df.dtypes` shows actualShipDate is `datetime64[ns]`. Both date columns must share the same `dtype` — subtracting a string from a datetime throws a `TypeError`, making `days_late` impossible to calculate.
 :::
 
 ::: {.callout-tip}
@@ -283,7 +283,7 @@ String comparison is character-by-character, not chronological. "04-11-2025" > "
 
 ::: {.callout-tip}
 ## Your Answer: Debug This Code
-Two problems: is_late is being created in this same .assign() call, so referencing shipments_df['is_late'] throws a KeyError. And even if it existed, a plain if on a Series raises a ValueError — Python can't evaluate an entire column as a single boolean. The fix:
+Two problems: `is_late` is being created in this same `.assign()` call, so referencing `shipments_df['is_late']` throws a `KeyError`. And even if it existed, a plain if on a Series raises a `ValueError` — Python can't evaluate an entire column as a single boolean. The fix:
 ```python
 lateStatement=lambda df: np.where(df['is_late'], "Darn Shipment is Late", "Shipment is on Time")
 ```
@@ -332,12 +332,21 @@ print(late_shipments.head())
 
 ::: {.callout-tip}
 ## Your Answer: Query vs Boolean Indexing
-*Replace this with your answer to Question 1.*
+Both filter to the same result, but `.query('is_late == True')` is cleaner inside a method chain — no need to repeat the dataframe name or wrap it in a lambda. Boolean indexing like `df[df['is_late'] == True]` works fine but adds visual noise, especially in longer chains.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Additional Row Querying
-*Replace this with your answer to Question 2.*
+The `@` symbol lets `.query()` reference a local variable rather than a column name:
+```python
+late_threshold = 5
+late_shipments = (
+    shipments_with_lateness
+    .query('days_late >= @late_threshold')
+    .filter(['shipID', 'partID', 'plannedShipDate', 'actualShipDate', 'days_late'])
+)
+```
+Adjusting `late_threshold` updates the filter without touching the query string itself.
 :::
 
 ### 3. Drop: Removing Unwanted Data
