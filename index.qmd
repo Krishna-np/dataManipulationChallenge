@@ -429,12 +429,16 @@ print(sorted_by_lateness[['shipID', 'partID', 'days_late', 'is_late']].head(10))
 
 ::: {.callout-tip}
 ## Your Answer: Sorting Strategies
-*Replace this with your answer to Question 1.*
+`ascending=True` sorts from smallest to largest (A→Z, earliest→latest), while ascending=False flips it. To sort by multiple columns, pass a list to `sort_values()`:
+```python
+.sort_values(['is_late', 'days_late'], ascending=[False, False])
+```
+This sorts by `is_late` first, then breaks ties using `days_late` — so all late shipments appear at the top, ordered by how late they are.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Index Management
-*Replace this with your answer to Question 2.*
+When you sort a dataframe, the original row index travels with each row — so instead of 0, 1, 2, 3... you end up with something like 0, 45, 12, 387. This becomes problematic when you need to reference rows by position or when the index is used in subsequent operations. `.reset_index(drop=True)` reassigns a clean sequential index. The `drop=True` part prevents the old index from being added as a new column.
 :::
 
 ### 5. Aggregate: Summarizing Data
