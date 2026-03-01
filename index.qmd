@@ -571,12 +571,12 @@ print(service_by_category)
 
 ::: {.callout-tip}
 ## Your Answer: GroupBy Mechanics
-*Replace this with your answer to Question 1.*
+`.groupby('prodCategory')` splits the dataframe into separate groups based on unique values in `prodCategory` — think of it as creating a mini-dataframe for each category behind the scenes. `.agg()` is then needed to specify what calculation to perform on each group. Without it, the groupby object just sits there — pandas doesn't know what to do with the groups until you tell it.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Multi-Level Grouping
-*Replace this with your answer to Question 2.*
+Grouping by `['shipID', 'prodCategory']` answers a different question than grouping by `'prodCategory'` alone. Instead of asking "how does lateness vary across categories?", it asks "for each shipment, how did each category within that shipment perform?" This is useful because a single `shipID` can have multiple rows with different `partIDs`, and those parts may belong to different categories — so grouping by both lets you analyze performance at the shipment-category level rather than just the category level.
 :::
 
 ## Answering A Business Question

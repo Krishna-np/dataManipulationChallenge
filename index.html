@@ -890,7 +890,7 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 1.</em></p>
+<p><code>.groupby('prodCategory')</code> splits the dataframe into separate groups based on unique values in <code>prodCategory</code> — think of it as creating a mini-dataframe for each category behind the scenes. <code>.agg()</code> is then needed to specify what calculation to perform on each group. Without it, the groupby object just sits there — pandas doesn’t know what to do with the groups until you tell it.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -903,7 +903,7 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 2.</em></p>
+<p>Grouping by <code>['shipID', 'prodCategory']</code> answers a different question than grouping by <code>'prodCategory'</code> alone. Instead of asking “how does lateness vary across categories?”, it asks “for each shipment, how did each category within that shipment perform?” This is useful because a single <code>shipID</code> can have multiple rows with different <code>partIDs</code>, and those parts may belong to different categories — so grouping by both lets you analyze performance at the shipment-category level rather than just the category level.</p>
 </div>
 </div>
 </section>
