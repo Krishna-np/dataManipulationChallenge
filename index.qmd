@@ -621,7 +621,7 @@ print(f"Percentage with multiple categories: {multi_category_shipments['shipID']
 
 ::: {.callout-tip}
 ## Your Answer: Business Question Analysis
-*Replace this with your answer to Question 1.*
+This analysis answers how often shipments contain products from more than one category. Grouping by `['shipID', 'prodCategory']` works at the shipment-category level, revealing which categories appeared together in the same shipment — something grouping by `'prodCategory'` alone can't tell you. Knowing `23.3%` of shipments are multi-category is useful for management because it affects warehouse picking, packaging logistics, and whether a late item in one category is impacting customers who ordered across multiple categories.
 :::
 
 ## Student Analysis Section: Mastering Data Manipulation {#student-analysis-section}
