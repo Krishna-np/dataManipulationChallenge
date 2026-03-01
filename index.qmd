@@ -385,12 +385,12 @@ print("Remaining columns:", clean_shipments.columns.tolist())
 
 ::: {.callout-tip}
 ## Your Answer: Drop vs Filter Strategies
-*Replace this with your answer to Question 1.*
+`.drop(columns=['quantity'])` makes sense when removing a small number of columns from a wide dataset. `.filter()` is better when you only need a handful of columns — listing 3 to keep is cleaner than listing 15 to drop. In method chains, `.filter()` also makes it immediately clear which columns are moving forward.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Handling Missing Data
-*Replace this with your answer to Question 2.*
+`.dropna()` without subset removes any row with a missing value in any column, which can silently shrink the dataset more than expected. `.dropna(subset=['plannedShipDate', 'actualShipDate'])` targets only the columns critical to the analysis, preserving rows that are still usable even if other fields are incomplete.
 :::
 
 ### 4. Sort: Arranging Data

@@ -619,7 +619,7 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 1.</em></p>
+<p><code>.drop(columns=['quantity'])</code> makes sense when removing a small number of columns from a wide dataset. <code>.filter()</code> is better when you only need a handful of columns — listing 3 to keep is cleaner than listing 15 to drop. In method chains, <code>.filter()</code> also makes it immediately clear which columns are moving forward.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -632,7 +632,7 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Replace this with your answer to Question 2.</em></p>
+<p><code>.dropna()</code> without subset removes any row with a missing value in any column, which can silently shrink the dataset more than expected. <code>.dropna(subset=['plannedShipDate', 'actualShipDate'])</code> targets only the columns critical to the analysis, preserving rows that are still usable even if other fields are incomplete.</p>
 </div>
 </div>
 </section>
