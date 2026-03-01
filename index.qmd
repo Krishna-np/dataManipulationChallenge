@@ -273,17 +273,20 @@ What's wrong with the `lateStatement` assignment and how would you fix it?
 
 ::: {.callout-tip}
 ## Your Answer: Data Types and Date Handling
-*Replace this with your answer to Question 1.*
+shipments_df.dtypes shows actualShipDate is datetime64[ns]. Both date columns must share the same dtype — subtracting a string from a datetime throws a TypeError, making days_late impossible to calculate.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: String vs Date Comparison
-*Replace this with your answer to Question 2.*
+String comparison is character-by-character, not chronological. "04-11-2025" > "05-20-2024" returns False as strings because "4" < "5" at the month position, despite April 2025 being later than May 2024. As datetimes, it correctly returns True.
 :::
 
 ::: {.callout-tip}
 ## Your Answer: Debug This Code
-*Replace this with your answer to Question 3.*
+Two problems: is_late is being created in this same .assign() call, so referencing shipments_df['is_late'] throws a KeyError. And even if it existed, a plain if on a Series raises a ValueError — Python can't evaluate an entire column as a single boolean. The fix:
+```python
+lateStatement=lambda df: np.where(df['is_late'], "Darn Shipment is Late", "Shipment is on Time")
+```
 :::
 
 ### 2. Subset: Querying Rows and Filtering Columns
