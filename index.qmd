@@ -661,6 +661,43 @@ This analysis answers how often shipments contain products from more than one ca
 - Be appropriate for a business audience
 - Do not `echo` the code that creates the visualizations
 
+```{python}
+#| echo: false
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+on_time_by_category = (
+    shipments_with_category
+    .groupby('prodCategory')['is_late']
+    .mean()
+    .mul(-1)
+    .add(1)
+    .mul(100)
+    .reset_index()
+    .rename(columns={'is_late': 'on_time_rate'})
+    .sort_values('on_time_rate', ascending=False)
+)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.barplot(
+    data=on_time_by_category,
+    x='prodCategory',
+    y='on_time_rate',
+    hue='prodCategory',
+    palette='Blues_d',
+    legend=False,
+    ax=ax
+)
+ax.set_title('On-Time Delivery Rate by Product Category', fontsize=14, fontweight='bold')
+ax.set_xlabel('Product Category')
+ax.set_ylabel('On-Time Rate (%)')
+ax.set_ylim(80, 100)
+ax.axhline(y=on_time_by_category['on_time_rate'].mean(), color='red', linestyle='--', label='Overall Average')
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
 ## Grading Rubric 🎓 {#grading-rubric}
 
 **75% Grade:** Complete discussion questions for at least 5 of the 7 mental models with clear, thoughtful responses.
