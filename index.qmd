@@ -479,7 +479,7 @@ print(f"\nOn-time delivery rate: {on_time_rate:.1f}%")
 
 ::: {.callout-tip}
 ## Your Answer: Boolean Aggregation
-*Replace this with your answer to Question 1.*
+In pandas, `True` is treated as `1` and `False` as `0`, so `sum()` on a boolean column counts the number of `True` values — in this case, the total number of late shipments. `mean()` then gives the proportion of late shipments, which is why multiplying by `100` converts it directly to a percentage.
 :::
 
 ### 6. Merge: Combining Information
